@@ -6,12 +6,13 @@ export default function App() {
   const [currChance, setcurrChance] = useState("w");
   const [sequence, setSequence] = useState([]);
   const [PossibleMoves, setPossibleMoves] = useState([]);
-  const [KingIndex, setKingIndex] = useState();
+  const [KingIndex, setKingIndex] = useState(null);
   const [capturedPeice, setcapturedPeice] = useState([]);
   const [isCheck, setisCheck] = useState(false);
   const [isMated, setisMated]=useState(false)
   const [KingsMoves, setKingsMoves] = useState([]);
-  const [MoveAfterCheck , setMoveAfterCheck]= useState(false);
+  const [checkProtectors,setcheckProtectors]=useState([]);
+  const [SelectPeiceToMoveKing , setSelectPeiceToMoveKing]=useState(false);
   const [Board, setBoard] = useState([
     ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
     ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
@@ -350,20 +351,43 @@ export default function App() {
   };
   function selectPeice(e, index) {
     e.stopPropagation();
-    // isChecked(Board);
-    if(MoveAfterCheck){
-      
+    if(SelectPeiceToMoveKing){
+      const i1 = Math.floor(KingIndex / 10);
+      const j1 = KingIndex % 10;
+      const i2 = Math.floor(index / 10);
+      const j2 = index % 10;
+      const TakenPeice = Board[i2][j2];
+      const newBoard = [...Board];
+      console.log(`Moving from ${i1} and ${j1} to ${i2} and ${j2}`)
+      newBoard[i2][j2]=newBoard[i1][j1];
+      newBoard[i1][j1]="";
+      setisCheck(false);
+      setSelectPeiceToMoveKing(false);
+      setPossibleMoves([]);
+      setcheckIndex(null);
+      setKingIndex(null);
+      setKingsMoves([]);
+      if(Board[i2][j2]!="") {
+        const Captured = [...capturedPeice];
+        Captured.push(TakenPeice);
+        setcapturedPeice(Captured);}
+      const Position = getPosition(i2, j2);
+      setSequence((prevArray) => [...prevArray, Position]);
+      setprevBoard(Board);
+      setBoard(newBoard);
+      currChance == "w" ? setcurrChance("b") : setcurrChance("w");
+      return;
     }
     if (isCheck) {
-      const j1 = index % 10;
-      const i1 = Math.floor(index / 10);
+      const j1 = KingIndex % 10;
+      const i1 = Math.floor(KingIndex / 10);
        if (currChance == "w" && Board[i1][j1] != "♔")
         toast.info("You have been checked Please move the king");
       else if (currChance == "b" && Board[i1][j1] != "♚")
         toast.info("You have been checked Please move the king");
       else
         setPossibleMoves(KingsMoves);
-      setMoveAfterCheck(true);
+        setSelectPeiceToMoveKing(true);
         return;
     }
 
@@ -440,6 +464,7 @@ export default function App() {
   function isChecked() {
     // console.log("isChecked is called");
     const CurrPeices = currChance == "w" ? [...BlackPeice] : [...WhitePeice];
+    const MyPieces = currChance == "b" ? [...BlackPeice] : [...WhitePeice];
 
     const MyKing = currChance == "w" ? "♔" : "♚";
     let MyKingIndex;
@@ -455,7 +480,7 @@ export default function App() {
       }
     }
     let isThereACheck = false;
-    let checkingPeices = [];
+    let peicesGivingCheck = [];
     // console.log(`My king index : ${MyKingIndex}`);
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
@@ -464,14 +489,14 @@ export default function App() {
 
           if (reachableSquares.includes(MyKingIndex)) {
             isThereACheck = true;
-            checkingPeices.push(i * 10 + j);
+            peicesGivingCheck.push(i * 10 + j);
           }
         }
       }
     }
     if (isThereACheck) {
       setKingIndex(MyKingIndex);
-      // setpiecesGivingCheck(checkingPeices);
+      // setcheckingPeices(peicesGivingCheck);
       setisCheck(isThereACheck);
       toast.info(`${currChance == "w" ? "white" : "black"} has been checked`);
       let KingMoves = getPossibleMoves(
@@ -492,6 +517,15 @@ export default function App() {
           }
         }
       }
+      if(peicesGivingCheck.length==1){
+        for(let i=0;i<8;i++){
+          for(let j = 0;j<8;j++){
+            if(MyPieces.includes(Board[i][j])){
+              
+            }
+          }
+        }
+      }
       setKingsMoves(KingMoves);
       setcheckIndex(MyKingIndex);
       if(KingMoves.length == 0){
@@ -499,6 +533,10 @@ export default function App() {
         
       }
     }
+  }
+  function canSaveCheck(Board,i,j){
+    const moves = getPossibleMoves(i,j,'c');
+    
   }
   function removeFocus() {
     if (activeIndex == null) return;
@@ -548,6 +586,7 @@ export default function App() {
                 bgColor = "bg-gray-200";
               if( checkIndex == rowIndex *10 + colIndex)
                 bgColor = "bg-red-300";
+           
               
               return (
                 <li
