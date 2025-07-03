@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 export default function App() {
   const [activeIndex, setactiveIndex] = useState(null);
-  const [checkIndex , setcheckIndex]=useState(null);
+  const [checkIndex, setcheckIndex] = useState(null);
   const [currChance, setcurrChance] = useState("w");
   const [sequence, setSequence] = useState([]);
   const [PossibleMoves, setPossibleMoves] = useState([]);
   const [KingIndex, setKingIndex] = useState(null);
   const [capturedPeice, setcapturedPeice] = useState([]);
+  const [capturedPeicesPrev, setcapturedPeicePrev] = useState([]);
   const [isCheck, setisCheck] = useState(false);
-  const [isMated, setisMated]=useState(false)
+  const [isMated, setisMated] = useState(false);
   const [KingsMoves, setKingsMoves] = useState([]);
-  const [checkProtectors,setcheckProtectors]=useState([]);
-  const [SelectPeiceToMoveKing , setSelectPeiceToMoveKing]=useState(false);
+  const [checkProtectors, setcheckProtectors] = useState([]);
+  const [checkProtectorsMoves, setcheckProtectorsMoves] = useState([]);
+  const [SelectPeiceToMoveKing, setSelectPeiceToMoveKing] = useState(false);
+  // const [history,sethistory]=useState([]);
   const [Board, setBoard] = useState([
     ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
     ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
@@ -91,37 +94,37 @@ export default function App() {
     // console.log("Retrieved Position : ", Position);
     return Position;
   };
-  const getPossibleMoves = (i, j, mode) => {
-    const Piece = Board[i][j];
+  const getPossibleMoves = (i, j, mode,ChessBoard = Board) => {
+    const Piece = ChessBoard[i][j];
     const moves = [];
     // console.log(i, j);
 
     if (Piece == "♜" || Piece == "♖") {
       const Counter = Piece == "♜" ? [...WhitePeice] : [...BlackPeice];
       for (let k = j - 1; k >= 0; k--) {
-        if (Board[i][k] != "") {
-          if (Counter.includes(Board[i][k])) moves.push(i * 10 + k);
+        if (ChessBoard[i][k] != "") {
+          if (Counter.includes(ChessBoard[i][k])) moves.push(i * 10 + k);
           break;
         }
         moves.push(i * 10 + k);
       }
       for (let k = j + 1; k < 8; k++) {
-        if (Board[i][k] != "") {
-          if (Counter.includes(Board[i][k])) moves.push(i * 10 + k);
+        if (ChessBoard[i][k] != "") {
+          if (Counter.includes(ChessBoard[i][k])) moves.push(i * 10 + k);
           break;
         }
         moves.push(i * 10 + k);
       }
       for (let k = i - 1; k >= 0; k--) {
-        if (Board[k][j] != "") {
-          if (Counter.includes(Board[k][j])) moves.push(k * 10 + j);
+        if (ChessBoard[k][j] != "") {
+          if (Counter.includes(ChessBoard[k][j])) moves.push(k * 10 + j);
           break;
         }
         moves.push(k * 10 + j);
       }
       for (let k = i + 1; k < 8; k++) {
-        if (Board[k][j] != "") {
-          if (Counter.includes(Board[k][j])) moves.push(k * 10 + j);
+        if (ChessBoard[k][j] != "") {
+          if (Counter.includes(ChessBoard[k][j])) moves.push(k * 10 + j);
           break;
         }
         moves.push(k * 10 + j);
@@ -129,28 +132,28 @@ export default function App() {
     } else if (Piece == "♞" || Piece == "♘") {
       // console.log("Godha");
       const checkArr = Piece == "♞" ? [...BlackPeice] : [...WhitePeice];
-      if (i + 2 < 8 && j + 1 < 8 && !checkArr.includes(Board[i + 2][j + 1])) {
+      if (i + 2 < 8 && j + 1 < 8 && !checkArr.includes(ChessBoard[i + 2][j + 1])) {
         moves.push((i + 2) * 10 + (j + 1));
       }
-      if (i + 1 < 8 && j + 2 < 8 && !checkArr.includes(Board[i + 1][j + 2])) {
+      if (i + 1 < 8 && j + 2 < 8 && !checkArr.includes(ChessBoard[i + 1][j + 2])) {
         moves.push((i + 1) * 10 + (j + 2));
       }
-      if (i - 1 >= 0 && j - 2 >= 0 && !checkArr.includes(Board[i - 1][j - 2])) {
+      if (i - 1 >= 0 && j - 2 >= 0 && !checkArr.includes(ChessBoard[i - 1][j - 2])) {
         moves.push((i - 1) * 10 + (j - 2));
       }
-      if (i + 1 < 8 && j - 2 >= 0 && !checkArr.includes(Board[i + 1][j - 2])) {
+      if (i + 1 < 8 && j - 2 >= 0 && !checkArr.includes(ChessBoard[i + 1][j - 2])) {
         moves.push((i + 1) * 10 + (j - 2));
       }
-      if (i - 1 >= 0 && j + 2 < 8 && !checkArr.includes(Board[i - 1][j + 2])) {
+      if (i - 1 >= 0 && j + 2 < 8 && !checkArr.includes(ChessBoard[i - 1][j + 2])) {
         moves.push((i - 1) * 10 + (j + 2));
       }
-      if (i - 2 >= 0 && j - 1 >= 0 && !checkArr.includes(Board[i - 2][j - 1])) {
+      if (i - 2 >= 0 && j - 1 >= 0 && !checkArr.includes(ChessBoard[i - 2][j - 1])) {
         moves.push((i - 2) * 10 + (j - 1));
       }
-      if (i + 2 < 8 && j - 1 >= 0 && !checkArr.includes(Board[i + 2][j - 1])) {
+      if (i + 2 < 8 && j - 1 >= 0 && !checkArr.includes(ChessBoard[i + 2][j - 1])) {
         moves.push((i + 2) * 10 + (j - 1));
       }
-      if (i - 2 >= 0 && j + 1 < 8 && !checkArr.includes(Board[i - 2][j + 1])) {
+      if (i - 2 >= 0 && j + 1 < 8 && !checkArr.includes(ChessBoard[i - 2][j + 1])) {
         moves.push((i - 2) * 10 + (j + 1));
       }
       // console.log("Possible moves for ghodha are : ");
@@ -163,8 +166,8 @@ export default function App() {
       var k1 = i + 1,
         k2 = j + 1;
       while (k1 < 8 && k2 < 8) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -174,8 +177,8 @@ export default function App() {
       }
       (k1 = i - 1), (k2 = j + 1);
       while (k1 >= 0 && k2 < 8) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -185,8 +188,8 @@ export default function App() {
       }
       (k1 = i - 1), (k2 = j - 1);
       while (k1 >= 0 && k2 >= 0) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -196,8 +199,8 @@ export default function App() {
       }
       (k1 = i + 1), (k2 = j - 1);
       while (k1 < 8 && k2 >= 0) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -208,21 +211,21 @@ export default function App() {
     } else if (Piece == "♚" || Piece == "♔") {
       // console.log("Raja");
       const checkArr = Piece == "♚" ? [...BlackPeice] : [...WhitePeice];
-      if (i + 1 < 8 && j + 1 < 8 && !checkArr.includes(Board[i + 1][j + 1]))
+      if (i + 1 < 8 && j + 1 < 8 && !checkArr.includes(ChessBoard[i + 1][j + 1]))
         moves.push((i + 1) * 10 + j + 1);
-      if (j + 1 < 8 && !checkArr.includes(Board[i][j + 1]))
+      if (j + 1 < 8 && !checkArr.includes(ChessBoard[i][j + 1]))
         moves.push(i * 10 + j + 1);
-      if (i + 1 < 8 && !checkArr.includes(Board[i + 1][j]))
+      if (i + 1 < 8 && !checkArr.includes(ChessBoard[i + 1][j]))
         moves.push((i + 1) * 10 + j);
-      if (i - 1 >= 0 && j + 1 < 8 && !checkArr.includes(Board[i - 1][j + 1]))
+      if (i - 1 >= 0 && j + 1 < 8 && !checkArr.includes(ChessBoard[i - 1][j + 1]))
         moves.push((i - 1) * 10 + j + 1);
-      if (i + 1 < 8 && j - 1 >= 0 && !checkArr.includes(Board[i + 1][j - 1]))
+      if (i + 1 < 8 && j - 1 >= 0 && !checkArr.includes(ChessBoard[i + 1][j - 1]))
         moves.push((i + 1) * 10 + j - 1);
-      if (i - 1 >= 0 && j - 1 >= 0 && !checkArr.includes(Board[i - 1][j - 1]))
+      if (i - 1 >= 0 && j - 1 >= 0 && !checkArr.includes(ChessBoard[i - 1][j - 1]))
         moves.push((i - 1) * 10 + j - 1);
-      if (i - 1 >= 0 && !checkArr.includes(Board[i - 1][j]))
+      if (i - 1 >= 0 && !checkArr.includes(ChessBoard[i - 1][j]))
         moves.push((i - 1) * 10 + j);
-      if (j - 1 >= 0 && !checkArr.includes(Board[i][j - 1]))
+      if (j - 1 >= 0 && !checkArr.includes(ChessBoard[i][j - 1]))
         moves.push(i * 10 + j - 1);
     } else if (Piece == "♛" || Piece == "♕") {
       // console.log("Rani");
@@ -231,8 +234,8 @@ export default function App() {
       var k1 = i + 1,
         k2 = j + 1;
       while (k1 < 8 && k2 < 8) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -242,8 +245,8 @@ export default function App() {
       }
       (k1 = i - 1), (k2 = j + 1);
       while (k1 >= 0 && k2 < 8) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -253,8 +256,8 @@ export default function App() {
       }
       (k1 = i - 1), (k2 = j - 1);
       while (k1 >= 0 && k2 >= 0) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -264,8 +267,8 @@ export default function App() {
       }
       (k1 = i + 1), (k2 = j - 1);
       while (k1 < 8 && k2 >= 0) {
-        if (checkArr.includes(Board[k1][k2])) break;
-        else if (Board[k1][k2] == "") moves.push(k1 * 10 + k2);
+        if (checkArr.includes(ChessBoard[k1][k2])) break;
+        else if (ChessBoard[k1][k2] == "") moves.push(k1 * 10 + k2);
         else {
           moves.push(k1 * 10 + k2);
           break;
@@ -274,29 +277,29 @@ export default function App() {
         k2--;
       }
       for (let k = j - 1; k >= 0; k--) {
-        if (Board[i][k] != "") {
-          if (Counter.includes(Board[i][k])) moves.push(i * 10 + k);
+        if (ChessBoard[i][k] != "") {
+          if (Counter.includes(ChessBoard[i][k])) moves.push(i * 10 + k);
           break;
         }
         moves.push(i * 10 + k);
       }
       for (let k = j + 1; k < 8; k++) {
-        if (Board[i][k] != "") {
-          if (Counter.includes(Board[i][k])) moves.push(i * 10 + k);
+        if (ChessBoard[i][k] != "") {
+          if (Counter.includes(ChessBoard[i][k])) moves.push(i * 10 + k);
           break;
         }
         moves.push(i * 10 + k);
       }
       for (let k = i - 1; k >= 0; k--) {
-        if (Board[k][j] != "") {
-          if (Counter.includes(Board[k][j])) moves.push(k * 10 + j);
+        if (ChessBoard[k][j] != "") {
+          if (Counter.includes(ChessBoard[k][j])) moves.push(k * 10 + j);
           break;
         }
         moves.push(k * 10 + j);
       }
       for (let k = i + 1; k < 8; k++) {
-        if (Board[k][j] != "") {
-          if (Counter.includes(Board[k][j])) moves.push(k * 10 + j);
+        if (ChessBoard[k][j] != "") {
+          if (Counter.includes(ChessBoard[k][j])) moves.push(k * 10 + j);
           break;
         }
         moves.push(k * 10 + j);
@@ -310,36 +313,36 @@ export default function App() {
       const color = Piece == "♟" ? "b" : "w";
       const CounterArray = Piece == "♟" ? [...WhitePeice] : [...BlackPeice];
       if (color == "b") {
-        if (i + 1 < 8 && Board[i + 1][j] == "") moves.push((i + 1) * 10 + j);
-        if (i == 1 && Board[i + 1][j] == "" && Board[i + 2][j] == "")
+        if (i + 1 < 8 && ChessBoard[i + 1][j] == "") moves.push((i + 1) * 10 + j);
+        if (i == 1 && ChessBoard[i + 1][j] == "" && ChessBoard[i + 2][j] == "")
           moves.push((i + 2) * 10 + j);
         if (
           i + 1 < 8 &&
           j + 1 < 8 &&
-          CounterArray.includes(Board[i + 1][j + 1])
+          CounterArray.includes(ChessBoard[i + 1][j + 1])
         )
           moves.push((i + 1) * 10 + j + 1);
         if (
           i + 1 < 8 &&
           j - 1 >= 0 &&
-          CounterArray.includes(Board[i + 1][j - 1])
+          CounterArray.includes(ChessBoard[i + 1][j - 1])
         )
           moves.push((i + 1) * 10 + j - 1);
       }
       if (color == "w") {
-        if (i - 1 >= 0 && Board[i - 1][j] == "") moves.push((i - 1) * 10 + j);
-        if (i == 6 && Board[i - 1][j] == "" && Board[i - 2][j] == "")
+        if (i - 1 >= 0 && ChessBoard[i - 1][j] == "") moves.push((i - 1) * 10 + j);
+        if (i == 6 && ChessBoard[i - 1][j] == "" && ChessBoard[i - 2][j] == "")
           moves.push((i - 2) * 10 + j);
         if (
           i - 1 >= 0 &&
           j - 1 >= 0 &&
-          CounterArray.includes(Board[i - 1][j - 1])
+          CounterArray.includes(ChessBoard[i - 1][j - 1])
         )
           moves.push((i - 1) * 10 + j - 1);
         if (
           i - 1 >= 0 &&
           j + 1 < 8 &&
-          CounterArray.includes(Board[i - 1][j + 1])
+          CounterArray.includes(ChessBoard[i - 1][j + 1])
         )
           moves.push((i - 1) * 10 + j + 1);
       }
@@ -351,26 +354,31 @@ export default function App() {
   };
   function selectPeice(e, index) {
     e.stopPropagation();
-    if(SelectPeiceToMoveKing){
+    if (SelectPeiceToMoveKing) {
       const i1 = Math.floor(KingIndex / 10);
       const j1 = KingIndex % 10;
       const i2 = Math.floor(index / 10);
       const j2 = index % 10;
+      if(!PossibleMoves.includes(index)){
+        console.log("Select a valid moving place");
+        return;
+      }
       const TakenPeice = Board[i2][j2];
       const newBoard = [...Board];
-      console.log(`Moving from ${i1} and ${j1} to ${i2} and ${j2}`)
-      newBoard[i2][j2]=newBoard[i1][j1];
-      newBoard[i1][j1]="";
+      console.log(`Moving from ${i1} and ${j1} to ${i2} and ${j2}`);
+      newBoard[i2][j2] = newBoard[i1][j1];
+      newBoard[i1][j1] = "";
       setisCheck(false);
       setSelectPeiceToMoveKing(false);
       setPossibleMoves([]);
       setcheckIndex(null);
       setKingIndex(null);
       setKingsMoves([]);
-      if(Board[i2][j2]!="") {
+      if (Board[i2][j2] != "") {
         const Captured = [...capturedPeice];
         Captured.push(TakenPeice);
-        setcapturedPeice(Captured);}
+        setcapturedPeice(Captured);
+      }
       const Position = getPosition(i2, j2);
       setSequence((prevArray) => [...prevArray, Position]);
       setprevBoard(Board);
@@ -379,16 +387,21 @@ export default function App() {
       return;
     }
     if (isCheck) {
-      const j1 = KingIndex % 10;
-      const i1 = Math.floor(KingIndex / 10);
-       if (currChance == "w" && Board[i1][j1] != "♔")
-        toast.info("You have been checked Please move the king");
-      else if (currChance == "b" && Board[i1][j1] != "♚")
-        toast.info("You have been checked Please move the king");
-      else
-        setPossibleMoves(KingsMoves);
+      const j1 = index % 10;
+      const i1 = Math.floor(index / 10);
+      console.log(checkProtectors,i1*10+j1,index)
+      console.log(checkProtectors.some(obj => obj.start == i1*10+j1));
+      
+      if(checkProtectors.some(obj => obj.start == i1*10+j1)){
+        const ob = checkProtectors.find(obj => obj.start == i1*10+j1);
+        setPossibleMoves([ob.end]);
+        console.log(ob.end)
+        console.log("You have selected : ",ob)
         setSelectPeiceToMoveKing(true);
-        return;
+      }
+      else {setPossibleMoves(KingsMoves);
+      setSelectPeiceToMoveKing(true);}
+      return;
     }
 
     if (activeIndex == null) {
@@ -401,8 +414,7 @@ export default function App() {
         console.log("Select a white peice");
       } else if (currChance == "b" && !BlackPeice.includes(Board[i1][j1])) {
         console.log("Select a black peice");
-      }
-      else {
+      } else {
         setactiveIndex(index);
         console.log(`Focus installed on ${Board[i1][j1]}`);
         getPossibleMoves(i1, j1, "g");
@@ -441,12 +453,14 @@ export default function App() {
         const peice = newBoard[i1][j1];
         newBoard[i1][j1] = newBoard[i2][j2];
         newBoard[i2][j2] = peice;
+        setcapturedPeicePrev(capturedPeice);
       } else {
         const TakenPeice = Board[i2][j2];
         newBoard[i2][j2] = newBoard[i1][j1];
         newBoard[i1][j1] = "";
         const Captured = [...capturedPeice];
         Captured.push(TakenPeice);
+        setcapturedPeicePrev(capturedPeice);
         setcapturedPeice(Captured);
         console.log(`${Board[i1][j1]} takes the peice ${Board[i2][j2]}`);
       }
@@ -517,26 +531,49 @@ export default function App() {
           }
         }
       }
-      if(peicesGivingCheck.length==1){
-        for(let i=0;i<8;i++){
-          for(let j = 0;j<8;j++){
-            if(MyPieces.includes(Board[i][j])){
-              
+      setKingsMoves(KingMoves);
+      setcheckIndex(MyKingIndex);
+      const checkProtect = [];
+      if (peicesGivingCheck.length == 1) {
+        for (let i = 0; i < 8; i++) {
+          for (let j = 0; j < 8; j++) {
+            if (MyPieces.includes(Board[i][j])) {
+              const MovesToSimulate = getPossibleMoves(i, j, "c");
+              if (MovesToSimulate.length > 0) {
+                for (let k = 0; k < MovesToSimulate.length; k++) {
+                  if (canSaveCheck(Board.map((row) => [...row]),i,j,MovesToSimulate[k],peicesGivingCheck[0],MyKingIndex)) {
+                  console.log(`to save check Piece : ${Board[i][j]} , Move : ${MovesToSimulate[k]}`);
+                  checkProtect.push({start:i*10+j,end:MovesToSimulate[k]});
+                  }
+                }
+              }
             }
           }
         }
       }
-      setKingsMoves(KingMoves);
-      setcheckIndex(MyKingIndex);
-      if(KingMoves.length == 0){
-        toast.info(`${currChance == 'w' ? 'White' : 'Black'} has been mated`);
-        
+      setcheckProtectors(checkProtect);
+      // console.log(checkProtect[0].start);
+      // console.log(checkProtect.some(obj => obj.start == MyKingIndex))
+      if (KingMoves.length == 0 && checkProtect.length == 0) {
+        toast.info(`${currChance == "w" ? "White" : "Black"} has been mated`);
+        setisMated(true);
+        setisCheck(false);
       }
     }
   }
-  function canSaveCheck(Board,i,j){
-    const moves = getPossibleMoves(i,j,'c');
-    
+  function canSaveCheck(TempBoard, i, j, ToMoveIndex, peiceGivingCheck,KingIdx) {
+    const i2 = Math.floor(ToMoveIndex / 10);
+    const j2 = ToMoveIndex % 10;
+    const King = currChance == "w" ? "♔" : "♚";
+    if(Board[i][j]==King) return false;
+    const temp = TempBoard[i][j];
+    TempBoard[i][j] = TempBoard[i2][j2];
+    TempBoard[i2][j2] = temp;
+    const i3 = Math.floor(peiceGivingCheck / 10);
+    const j3 = peiceGivingCheck % 10;
+    const moves = getPossibleMoves(i3, j3, "c",TempBoard);
+    if (moves.includes(KingIdx)) return false;
+    else return true;
   }
   function removeFocus() {
     if (activeIndex == null) return;
@@ -548,6 +585,8 @@ export default function App() {
     if (prevBoard.length != 0) {
       setBoard(prevBoard);
       setprevBoard([]);
+      setcapturedPeice(capturedPeicesPrev);
+      setcapturedPeicePrev([]);
       setcurrChance(currChance == "w" ? "b" : "w");
       const sq = [...sequence];
       sq.pop();
@@ -557,7 +596,14 @@ export default function App() {
   function resetBoard() {
     setBoard(InitialBoard);
     setSequence([]);
+    setPossibleMoves([]);
     setcurrChance("w");
+    setisCheck(false);
+    setcheckIndex(null);
+    setKingIndex(null);
+    setisMated(false);
+    setKingsMoves([]);
+    setSelectPeiceToMoveKing([]);
     setcapturedPeice([]);
   }
   return (
@@ -584,10 +630,9 @@ export default function App() {
                 (rowIndex + colIndex) % 2 === 0 ? "bg-white" : "bg-gray-500";
               if (activeIndex == rowIndex * 10 + colIndex)
                 bgColor = "bg-gray-200";
-              if( checkIndex == rowIndex *10 + colIndex)
+              if (checkIndex == rowIndex * 10 + colIndex)
                 bgColor = "bg-red-300";
-           
-              
+
               return (
                 <li
                   key={`${rowIndex}-${colIndex}`}
