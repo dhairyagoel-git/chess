@@ -23,7 +23,7 @@ A beautifully crafted Chess game built using **ReactJS**. This project focuses o
 
 Click below to watch a short demo of the app:
 
-🎥 [Watch Chess Demo](chess.mp4)
+🎥 [Watch Chess Demo](./assets/chess.gif)
 
 ## 🛠 Installation & Running Locally
 
