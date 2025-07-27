@@ -23,7 +23,7 @@ A beautifully crafted Chess game built using **ReactJS**. This project focuses o
 
 
 <p align="center">
-  <img src="./assets/chess.gif" height="500" />
+  <img src="./assets/chess.gif" height="900" />
 </p>
 
 ## 🛠 Installation & Running Locally
