@@ -1,12 +1,33 @@
-# React + Vite
+# ♟️ React Chess Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A beautifully crafted Chess game built using **ReactJS**. This project focuses on implementing all core chess logic — from legal moves and check detection to pawn promotion — directly within the React component structure, without relying on any external chess engines.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- ♟ Fully functional 8x8 chessboard
+- ✅ Legal move validation
+- 🔄 Turn-based gameplay (White & Black)
+- ♔ Check and Checkmate detection
+- ↪️ Castling, En Passant, and Pawn Promotion
+- 🧠 Game logic written **from scratch** (no chess libraries used)
+- ⚛️ Built entirely with React and CSS
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+> 🔧 All core logic is directly embedded into the components or helper files — no external libraries like `chess.js` are used.
+
+---
+
+## 📸 Demo
+
+
+---
+
+## 🛠 Installation & Running Locally
+
+```bash
+git clone https://github.com/your-username/react-chess-game.git
+cd react-chess-game
+npm install
+npm start
